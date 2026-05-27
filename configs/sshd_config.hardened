@@ -1,0 +1,24 @@
+# SSH Hardening Reference
+# Apply to /etc/ssh/sshd_config
+# Key-based authentication only — password auth disabled at daemon level
+
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+UsePAM yes
+X11Forwarding no
+
+# TCP forwarding: disabled globally, enabled per-session via Match block for Tailscale
+AllowTcpForwarding no
+
+# Enable selective forwarding for Tailscale subnet (SSH pivot access)
+Match Address 100.0.0.0/8
+    AllowTcpForwarding yes
+
+# Restart SSH after changes
+# sudo systemctl restart ssh
+# sudo systemctl status ssh --no-pager
+
+# Verify no password auth possible
+# ssh -o PasswordAuthentication=yes user@SERVER_IP
+# Should return: Permission denied (publickey)

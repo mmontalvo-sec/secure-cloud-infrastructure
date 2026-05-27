@@ -1,0 +1,55 @@
+version: '3'
+
+# Nextcloud Stack — Nextcloud + MariaDB + Redis
+# Port binding is intentionally interface-specific — not 0.0.0.0
+# Replace SERVER_IP with your actual LAN IP before deploying
+
+services:
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud
+    restart: always
+    ports:
+      - "SERVER_IP:8080:80"
+    volumes:
+      - /srv/data/nextcloud:/var/www/html
+      - /srv/data/nextcloud/data:/var/www/html/data
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - NEXTCLOUD_TRUSTED_DOMAINS=${NEXTCLOUD_TRUSTED_DOMAINS}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  db:
+    image: mariadb:10.11
+    container_name: nextcloud_db
+    restart: always
+    volumes:
+      - /srv/data/db:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  redis:
+    image: redis:alpine
+    container_name: nextcloud_redis
+    restart: always
+
+networks:
+  default:
+    driver: bridge

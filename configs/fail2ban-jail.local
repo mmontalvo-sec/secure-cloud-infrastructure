@@ -1,0 +1,18 @@
+# Fail2Ban — /etc/fail2ban/jail.local
+# Overrides defaults in jail.conf without modifying the original file
+
+[DEFAULT]
+bantime  = 1h
+findtime = 10m
+maxretry = 5
+backend  = systemd
+
+[sshd]
+enabled  = true
+port     = ssh
+logpath  = %(sshd_log)s
+
+# --- Verify status ---
+# sudo fail2ban-client status
+# sudo fail2ban-client status sshd
+# sudo fail2ban-client set sshd unbanip IP_ADDRESS

@@ -1,0 +1,32 @@
+# Environment files — never commit credentials
+.env
+*.env
+.env.*
+!.env.example
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Secrets and keys
+*.pem
+*.key
+*.crt
+id_rsa
+id_ed25519
+authorized_keys
+
+# Backup staging (tracked separately)
+/srv/backups/

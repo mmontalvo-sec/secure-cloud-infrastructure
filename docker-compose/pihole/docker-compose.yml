@@ -1,0 +1,31 @@
+version: '3'
+
+# Pi-hole — Network-wide DNS Filtering
+# DNS port 53 bound to server LAN IP
+# Admin dashboard on port 8081 (LAN only)
+# Configure your router DHCP to push SERVER_IP as DNS
+
+services:
+  pihole:
+    image: pihole/pihole:latest
+    container_name: pihole
+    restart: unless-stopped
+    ports:
+      - "SERVER_IP:53:53/tcp"
+      - "SERVER_IP:53:53/udp"
+      - "SERVER_IP:8081:80/tcp"
+    volumes:
+      - /srv/data/pihole/etc-pihole:/etc/pihole
+      - /srv/data/pihole/etc-dnsmasq.d:/etc/dnsmasq.d
+    environment:
+      - TZ=${TZ}
+      - WEBPASSWORD=${PIHOLE_PASSWORD}
+      - PIHOLE_DNS_1=1.1.1.1
+      - PIHOLE_DNS_2=8.8.8.8
+      - DNSSEC=true
+    cap_add:
+      - NET_ADMIN
+
+networks:
+  default:
+    driver: bridge

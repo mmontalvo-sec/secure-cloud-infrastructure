@@ -1,0 +1,32 @@
+version: '3'
+
+# Ollama + Open WebUI — Local AI Inference Stack
+# All inference runs locally — no external API calls
+# WebUI bound to LAN interface only
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: always
+    volumes:
+      - /srv/ai/ollama:/root/.ollama
+    ports:
+      - "SERVER_IP:11434:11434"
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    restart: always
+    ports:
+      - "SERVER_IP:3000:8080"
+    volumes:
+      - /srv/ai/openwebui:/app/backend/data
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    depends_on:
+      - ollama
+
+networks:
+  default:
+    driver: bridge

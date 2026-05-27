@@ -1,0 +1,21 @@
+version: '3'
+
+# Portainer CE — Container Management
+# Bound to LAN interface only
+# Access via SSH tunnel if connecting remotely:
+#   ssh -L 9443:SERVER_IP:9443 user@100.x.x.x
+#   Then open: https://localhost:9443
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "SERVER_IP:9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+volumes:
+  portainer_data:
